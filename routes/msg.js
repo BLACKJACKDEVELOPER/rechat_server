@@ -1,11 +1,33 @@
-const db = require('../db.js')
+const { msgs } = require('../db.js')
 
 module.exports = {
 	async get(req,res) {
 		try {
 			const { query:{ room } } = req
-			const data = await db('SELECT * FROM report_msgs WHERE room=?;',
-				[room]);
+			const data = await msgs.aggregate([
+      {
+        $lookup: {
+          from: 'users',
+          let: { user_id: { $toObjectId: '$user_id' } }, // Convert user_id to ObjectId
+          pipeline: [
+            {
+              $match: {
+                $expr: { $eq: ['$_id', '$$user_id'] }
+              }
+            }
+          ],
+          as: 'user'
+        }
+      },
+      {
+        $unwind: '$user'
+      },
+      {
+        $match: {
+          room
+        }
+      }
+    ]);
 			return res.json({
 				data,
 				pass:true

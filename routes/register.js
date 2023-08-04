@@ -1,11 +1,11 @@
-const db = require('../db')
+const { users } = require('../db')
 
 module.exports = {
     async post(req,res) {
         try {
             const { username , fullname , email , birth , password } = req.body   
-            const qr = await db('INSERT INTO users(username,fullname,email,birth,password) VALUES (?,?,?,?,?);',
-            [username,fullname,email,birth,password])
+            const qr = await users.insert({username,fullname,email,birth,password,profile:'default.jpg'})
+            console.log(qr)
             return res.status(201).json(qr !== {})
 
         }catch(e) {

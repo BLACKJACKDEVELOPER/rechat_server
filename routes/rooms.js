@@ -1,13 +1,15 @@
-const db = require('../db.js')
+const { rooms } = require('../db.js')
 
 module.exports = {
 	async get(req,res) {
 		try {
-			const { query:{ id } } = req
-			const qr = id ? 'SELECT * FROM rooms WHERE id=?;' : 'SELECT * FROM rooms;'
-			const rooms = await db(qr,[id ? id : '']);
+			const { query:{ id , myroom } } = req
+			let allroom = id == undefined ? await rooms.find({}) : await rooms.find({_id:id});
+			if (myroom == 'true') {
+				allroom = await rooms.find({owner:req.user._id})
+			}
 			return res.json({
-				data:id ? rooms[0] : rooms,
+				data:allroom,
 				pass:true
 			})
 		}catch(e) {
