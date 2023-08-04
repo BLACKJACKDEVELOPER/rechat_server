@@ -5,7 +5,7 @@ const { Server } = require("socket.io");
 const io = new Server(server, {
   maxHttpBufferSize: 1e8,
   cors: {
-    origin: "http://192.168.0.211:3000"
+    origin: "https://rechat-c343f.web.app"
   }
 });
 
